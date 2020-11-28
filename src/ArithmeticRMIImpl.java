@@ -22,7 +22,7 @@ public class ArithmeticRMIImpl extends UnicastRemoteObject implements Arithmetic
 		super(); 	// Use constructor of parent class
 	}
 		
-	public int register(String username) throws java.rmi.RemoteException
+	public int register(String username) throws java.rmi.RemoteException // return 0 = register success ; 1 = account already exist
 	{
 		int exist = 0;
 		BufferedWriter fw = null;
@@ -71,8 +71,125 @@ public class ArithmeticRMIImpl extends UnicastRemoteObject implements Arithmetic
 		return -2;
 	}
 
-	public int login()throws java.rmi.RemoteException
+	public int login(String username)throws java.rmi.RemoteException // return 0 = login success ; 1 = account isn`t exist
 	{
-		
+		int exist = 0;
+		BufferedWriter fw = null;
+		BufferedReader reader = null;
+		File file = new File(".\\User.txt");
+		try {
+			fw = new BufferedWriter(new FileWriter(file, true));
+		} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+		}
+		try {
+			reader = new BufferedReader(new FileReader(file));
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		String str = "";
+		try {
+			while(true) 
+			{
+				str = reader.readLine();
+				if(str == null)
+					break;
+				if(str.compareTo(username)== 0)
+				{
+					exist = 1;
+				}
+			}
+			if(exist==1) 
+			{
+				fw.close();
+				String join = "----" + username + "join the chat" ;
+				fw.append(join);
+				
+				reader.close();
+				return 0;
+			}else if(exist==0){
+				reader.close();
+				fw.close();
+				return -1; 
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return -2;
+	}
+	
+	public String[] read_chat()throws java.rmi.RemoteException
+	{
+		BufferedReader reader = null;
+		File files = new File(".\\chat.txt");
+		try {
+			reader = new BufferedReader(new FileReader(files));
+		} 
+		catch (FileNotFoundException e1) 
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			String strs = null;
+			String strarr[] = new String[1000];
+			int i=0;;
+			while(true) 
+			{
+				strs = reader.readLine();
+				if(strs == null)
+					break;
+				else {
+					strarr[i] = strs;
+					i++;
+				}
+			}
+			return 	strarr;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public int check_have_new_comment(int index)throws java.rmi.RemoteException // return 0 = no new comment no need to update chat ; 1 = have new comment read the chat
+	{
+		BufferedReader reader = null;
+		File files = new File(".\\chat.txt");
+		try {
+			reader = new BufferedReader(new FileReader(files));
+		} 
+		catch (FileNotFoundException e1) 
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try 
+		{
+			String strs = null;
+			int i = 0;
+			while(true)
+			{
+				strs = reader.readLine();
+				if(strs==null)
+					break;
+				else 
+				{
+					i++;
+				}
+			}
+			if(index!=i) {
+				return 1; // have new comment
+			}else {
+				return 0;
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return -1;
 	}
 }
