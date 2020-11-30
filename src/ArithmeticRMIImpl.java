@@ -71,7 +71,7 @@ public class ArithmeticRMIImpl extends UnicastRemoteObject implements Arithmetic
 		return -2;
 	}
 
-	public int login(String username)throws java.rmi.RemoteException // return 0 = login success ; 1 = account isn`t exist
+	public int login(String username)throws java.rmi.RemoteException // return 0 = login success ; -1 = account isn`t exist
 	{
 		int exist = 0;
 		BufferedWriter fw = null;
@@ -79,15 +79,10 @@ public class ArithmeticRMIImpl extends UnicastRemoteObject implements Arithmetic
 		File file = new File(".\\User.txt");
 		try {
 			fw = new BufferedWriter(new FileWriter(file, true));
+			reader = new BufferedReader(new FileReader(file));
 		} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-		}
-		try {
-			reader = new BufferedReader(new FileReader(file));
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
 		}
 		String str = "";
 		try {
@@ -101,15 +96,12 @@ public class ArithmeticRMIImpl extends UnicastRemoteObject implements Arithmetic
 					exist = 1;
 				}
 			}
-			if(exist==1) 
+			if(exist == 1) 
 			{
 				fw.close();
-				String join = "----" + username + "join the chat" ;
-				fw.append(join);
-				
 				reader.close();
 				return 0;
-			}else if(exist==0){
+			}else if(exist == 0){
 				reader.close();
 				fw.close();
 				return -1; 
@@ -191,5 +183,29 @@ public class ArithmeticRMIImpl extends UnicastRemoteObject implements Arithmetic
 			e.printStackTrace();
 		}
 		return -1;
+	}
+	
+	public void add_comment(String username,String comment) throws java.rmi.RemoteException
+	{
+		BufferedWriter fwr = null;
+		File file = new File(".\\chat.txt");
+		try {
+			fwr = new BufferedWriter(new FileWriter(file, true));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		SimpleDateFormat sdf = new SimpleDateFormat();
+		sdf.applyPattern("yyyy-MM-dd HH:mm:ss a");
+		Date date = new Date();
+		String reply_comment = username + ":" + comment +"   " + sdf.format(date);
+		try {
+			fwr.append(reply_comment);
+			fwr.newLine();
+			fwr.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 	}
 }
