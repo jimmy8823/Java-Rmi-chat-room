@@ -12,9 +12,11 @@ public class chatGUI implements ActionListener
 	private static JTextField commentT;
 	private static JTextArea commentA;
 	private static JButton sentB;
+	private static JButton exitB;
+	private static JFrame chat;
 	public static void main(String args[])
 	{
-		JFrame chat = new JFrame();
+		chat = new JFrame();
 		JPanel chatPanel = new JPanel();
 		
 		chat.setSize(400,400);
@@ -24,15 +26,15 @@ public class chatGUI implements ActionListener
 		chatPanel.setLayout(null);
 		
 		commentL = new JLabel("comment : ");
-		commentL.setBounds(10, 380, 80, 20);		
+		commentL.setBounds(10, 370, 80, 20);		
 		chatPanel.add(commentL);
 		
 		commentT = new JTextField(20);
-		commentT.setBounds(80, 380, 200, 20);
+		commentT.setBounds(80, 370, 200, 20);
 		chatPanel.add(commentT);
 		
 		sentB = new JButton("sent");
-		sentB.setBounds(300, 380, 80, 25);
+		sentB.setBounds(300, 370, 80, 25);
 		sentB.addActionListener(new chatGUI());
 		sentB.setActionCommand("1");
 		chatPanel.add(sentB);
@@ -41,15 +43,33 @@ public class chatGUI implements ActionListener
 		commentA.setBounds(10, 10, 370, 350);
 		chatPanel.add(commentA);
 		
+		exitB = new JButton("exit");
+		exitB.setBounds(300, 400, 80, 25);
+		exitB.addActionListener(new chatGUI());
+		exitB.setActionCommand("2");
+		chatPanel.add(exitB);
+
+		
 		chat.setVisible(true);
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		String comment = commentT.getText();
-		System.out.print(comment+"\n");
-		commentT.setText("");
-		commentA.append(comment+"\n");
+		String cmd = e.getActionCommand();
+		if(cmd == "1") 
+		{
+			System.out.print(comment+"\n");
+			commentT.setText("");
+			commentA.append(comment+"\n");
+        }
+		if(cmd == "2") 
+		{
+			System.out.print("exit");
+			commentA.append("exit");
+			chat.dispose();
+        }
+		
 	}
 	
 }

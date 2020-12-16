@@ -198,7 +198,7 @@ public class ArithmeticRMIImpl extends UnicastRemoteObject implements Arithmetic
 		SimpleDateFormat sdf = new SimpleDateFormat();
 		sdf.applyPattern("yyyy-MM-dd HH:mm:ss a");
 		Date date = new Date();
-		String reply_comment = username + ":" + comment +"   " + sdf.format(date);
+		String reply_comment = sdf.format(date) + "   " + username + " : " + comment ;
 		try {
 			fwr.append(reply_comment);
 			fwr.newLine();
@@ -208,4 +208,80 @@ public class ArithmeticRMIImpl extends UnicastRemoteObject implements Arithmetic
 			e.printStackTrace();
 		}	
 	}
+	
+	public void logout(String username) 
+	{
+		BufferedWriter fwr = null;
+		File file = new File(".\\chat.txt");
+		try {
+			fwr = new BufferedWriter(new FileWriter(file, true));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		SimpleDateFormat sdf = new SimpleDateFormat();
+		sdf.applyPattern("yyyy-MM-dd HH:mm:ss a");
+		Date date = new Date();
+		String reply_comment ="-----   " + username + " left the chat room  " + sdf.format(date)+ "   -----";
+		try {
+			fwr.append(reply_comment);
+			fwr.newLine();
+			fwr.close();
+		}catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+		
+		
+	}
+	
+	public void join(String username) 
+	{
+		BufferedWriter fwr = null;
+		File file = new File(".\\chat.txt");
+		try {
+			fwr = new BufferedWriter(new FileWriter(file, true));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		SimpleDateFormat sdf = new SimpleDateFormat();
+		sdf.applyPattern("yyyy-MM-dd HH:mm:ss a");
+		Date date = new Date();
+		String reply_comment = "-----   " + username + " join the chat room  " + sdf.format(date) + "   -----";
+		try {
+			fwr.append(reply_comment);
+			fwr.newLine();
+			fwr.close();
+		}catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+	}
+	/*public void online(String username)
+	{
+		BufferedWriter fw = null;
+		File file = new File(".\\online.txt");
+		try {
+			fw = new BufferedWriter(new FileWriter(file, true));
+		} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+		}
+		try 
+		{
+			while(true) 
+			{
+				fw.append(username);
+				fw.newLine();
+				fw.close();
+			}
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	*/
 }

@@ -13,9 +13,8 @@ public class loginGUI implements ActionListener
 	private static JButton loginB;
 	private static JButton registerB;
 	private static JLabel successL;
-	public static void main(String args[])
+	public static void launch_login()
 	{
-		
 		JFrame login = new JFrame();
 		JPanel loginPanel = new JPanel();
 		login.setSize(400,200);
@@ -69,8 +68,5 @@ public class loginGUI implements ActionListener
 			System.out.print(username+"register\n");
 			successL.setText("register successful ! Loign pls");
         }
-		
-		
-		
 	}
 }

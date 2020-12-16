@@ -7,4 +7,6 @@ public interface ArithmeticInterface extends Remote
 	public String[] read_chat()throws java.rmi.RemoteException;
 	public int check_have_new_comment(int index)throws java.rmi.RemoteException;
 	public void add_comment(String username,String comment) throws java.rmi.RemoteException;
+	public void logout(String username) throws java.rmi.RemoteException;
+	public void join(String username) throws java.rmi.RemoteException;
 }
