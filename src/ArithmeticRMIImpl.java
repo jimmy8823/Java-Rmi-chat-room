@@ -12,11 +12,19 @@ import java.io.OutputStreamWriter;
 import java.rmi.server.UnicastRemoteObject;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ArithmeticRMIImpl extends UnicastRemoteObject implements ArithmeticInterface
 {
 	// This implementation must have a public constructor.
 	// The constructor throws a RemoteException.
+	boolean user_change = false;
+	String userlist[] = new String[100];
+	
+	//用來儲存線上的使用者
+	List<String> onlineUserList = new LinkedList<String>(); 
+	
 	public ArithmeticRMIImpl() throws java.rmi.RemoteException
 	{
 		super(); 	// Use constructor of parent class
@@ -71,15 +79,18 @@ public class ArithmeticRMIImpl extends UnicastRemoteObject implements Arithmetic
 		return -2;
 	}
 
-	public int login(String username)throws java.rmi.RemoteException // return 0 = login success ; -1 = account isn`t exist
+	public int login(String username)throws java.rmi.RemoteException // return 0 = login success ; -1 = account isn`t exist ; -2 = already login ;
 	{
 		int exist = 0;
-		BufferedWriter fw = null;
+		//BufferedWriter fw = null;
 		BufferedReader reader = null;
+		//BufferedWriter fwo = null;
 		File file = new File(".\\User.txt");
+		//File fileo = new File(".\\Online.txt");
 		try {
-			fw = new BufferedWriter(new FileWriter(file, true));
+			//fw = new BufferedWriter(new FileWriter(file, true));
 			reader = new BufferedReader(new FileReader(file));
+			//fwo = new BufferedWriter(new FileWriter(fileo, true));
 		} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -98,12 +109,25 @@ public class ArithmeticRMIImpl extends UnicastRemoteObject implements Arithmetic
 			}
 			if(exist == 1) 
 			{
-				fw.close();
-				reader.close();
-				return 0;
+				//fwo.append(username);
+				//fwo.newLine();
+				//fwo.close();
+				if(!onlineUserList.contains(username)) {
+					reader.close();
+					user_change = true;
+					onlineUserList.add(username);
+					return 0; // login success
+				}else {
+					reader.close();
+					return -2; // this user already login
+				}
+				//fw.close();
+				
+				
 			}else if(exist == 0){
 				reader.close();
-				fw.close();
+				//fw.close();
+				//fwo.close();
 				return -1; 
 			}
 		} catch (IOException e) {
@@ -196,7 +220,7 @@ public class ArithmeticRMIImpl extends UnicastRemoteObject implements Arithmetic
 			e1.printStackTrace();
 		}
 		SimpleDateFormat sdf = new SimpleDateFormat();
-		sdf.applyPattern("yyyy-MM-dd HH:mm:ss a");
+		sdf.applyPattern("MM-dd HH:mm:ss");
 		Date date = new Date();
 		String reply_comment = sdf.format(date) + "   " + username + " : " + comment ;
 		try {
@@ -212,9 +236,16 @@ public class ArithmeticRMIImpl extends UnicastRemoteObject implements Arithmetic
 	public void logout(String username) 
 	{
 		BufferedWriter fwr = null;
+		//BufferedWriter fwt = null;
+		//BufferedReader reader = null;
+		String str="";
 		File file = new File(".\\chat.txt");
+		//File fileo = new File(".\\Online.txt");
+		//File create_file = new File(".\\temp.txt"); // read online user to temp
 		try {
 			fwr = new BufferedWriter(new FileWriter(file, true));
+			//fwt = new BufferedWriter(new FileWriter(create_file, true));
+			//reader = new BufferedReader(new FileReader(fileo));
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -224,15 +255,34 @@ public class ArithmeticRMIImpl extends UnicastRemoteObject implements Arithmetic
 		Date date = new Date();
 		String reply_comment ="-----   " + username + " left the chat room  " + sdf.format(date)+ "   -----";
 		try {
+			onlineUserList.remove(username);
 			fwr.append(reply_comment);
 			fwr.newLine();
 			fwr.close();
+			/*
+			while(true) 
+			{
+				str = reader.readLine();
+				if(str==null) 
+					break;
+				if(str.compareTo(username)==0)
+					continue;
+				else {
+					fwt.append(str);
+					fwt.newLine();
+				}
+			}
+			
+			fwt.close();
+			reader.close();
+			*/
+			//fileo.delete();
+			//create_file.renameTo(fileo);
+			user_change = true;
 		}catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
-		
-		
 	}
 	
 	public void join(String username) 
@@ -258,30 +308,50 @@ public class ArithmeticRMIImpl extends UnicastRemoteObject implements Arithmetic
 			e.printStackTrace();
 		}	
 	}
-	/*public void online(String username)
+	
+	public List<String> getOnlineuser() // read online.txt put in userlist array and return userlist to client
 	{
-		BufferedWriter fw = null;
-		File file = new File(".\\online.txt");
+		return onlineUserList;
+		/*
+		BufferedReader reader = null;
+		File file = new File(".\\Online.txt");
+		String str = "";
+		int i = 0;
 		try {
-			fw = new BufferedWriter(new FileWriter(file, true));
-		} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-		}
-		try 
-		{
-			while(true) 
-			{
-				fw.append(username);
-				fw.newLine();
-				fw.close();
+			reader = new BufferedReader(new FileReader(file));
+			while(true) {
+				str = reader.readLine();
+				if(str == null)
+					break;
+				else {
+					userlist[i] = str;
+					i++;
+				}
 			}
-		}
-		catch (IOException e)
-		{
+			return userlist;
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return null;
+		*/
 	}
-	*/
+	
+	public	boolean check_user_change(String[] online_user)throws java.rmi.RemoteException // online_user = client current userlist coompare it with server userlist if different return true
+	{
+		int i = 0;
+		user_change = false;
+		while(true) {
+			if(userlist[i]==null||online_user[i]==null)
+				break;
+			if(userlist[i].compareTo(online_user[i])==0) {
+				i++;
+				continue;
+			}else {
+				user_change = true;
+				break;
+			}
+		}
+		return user_change;
+	}
 }

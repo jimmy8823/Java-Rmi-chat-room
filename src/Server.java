@@ -10,7 +10,7 @@ import java.rmi.server.*;
 
 public class Server
 {
-	// Bind ArithmeticServer and Registry
+	// Bind ArithmeticServer and Registry.
 	public static void main(String args[])
 	{
 		//System.setSecurityManager(new RMISecurityManager());
